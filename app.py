@@ -66,6 +66,5 @@ def download_holerite(cpf):
 
 # Configuração para o Render
 if __name__ == '__main__':
-    # Mudar a linha para usar diretamente a porta 5000
+    # Substituir o 'port' por 5000 diretamente
     app.run(host='0.0.0.0', port=5000)
-
