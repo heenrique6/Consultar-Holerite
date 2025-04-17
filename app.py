@@ -64,7 +64,9 @@ def download_holerite(cpf):
 
     return send_from_directory(app.config['UPLOAD_FOLDER'], f"{cpf}_holerite.pdf", as_attachment=True)
 
+# Configuração para o Render
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))  # Porta padrão para Render
+    app.run(host='0.0.0.0', port=port
 
 
