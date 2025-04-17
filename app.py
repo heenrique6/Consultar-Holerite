@@ -1,6 +1,5 @@
-from flask import Flask, request, render_template, jsonify, send_from_directory, redirect, url_for
+from flask import Flask, request, render_template, jsonify, send_from_directory
 import os
-import csv
 
 # Configuração do Flask
 app = Flask(__name__)
@@ -13,50 +12,34 @@ if not os.path.exists(UPLOAD_FOLDER):
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Armazenar dados dos funcionários
-funcionarios = {}
+funcionarios = {}  # Inicialmente vazio
 
 # Página inicial para cadastro de funcionários
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Rota para upload de CSV e holerites
-@app.route('/upload_dados', methods=['GET', 'POST'])
-def upload_dados():
-    if request.method == 'POST':
-        csv_file = request.files['csv_file']
-        holerites_folder = request.files.getlist('holerites')
+# Rota para cadastrar um funcionário
+@app.route('/funcionarios', methods=['POST'])
+def cadastrar_funcionario():
+    cpf = request.form['cpf']
+    nome = request.form['nome']
+    arquivo = request.files['arquivo']
 
-        if not csv_file or not holerites_folder:
-            return jsonify({'error': 'É necessário enviar tanto o arquivo CSV quanto os arquivos de holerites!'}), 400
-        
-        # Salvar o arquivo CSV
-        csv_filepath = os.path.join(app.config['UPLOAD_FOLDER'], 'dados_funcionarios.csv')
-        csv_file.save(csv_filepath)
+    if not cpf or not nome or not arquivo:
+        return jsonify({'error': 'Todos os campos são obrigatórios!'}), 400
 
-        # Processar o CSV para adicionar os funcionários
-        with open(csv_filepath, 'r', newline='', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                cpf = row['cpf']
-                nome = row['nome']
-                funcionarios[cpf] = {'nome': nome, 'arquivo': None}
+    # Salvar o arquivo PDF no diretório de uploads
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], f"{cpf}_holerite.pdf")
+    arquivo.save(filepath)
 
-        # Salvar os arquivos de holerites
-        for holerite in holerites_folder:
-            holerite_path = os.path.join(app.config['UPLOAD_FOLDER'], holerite.filename)
-            holerite.save(holerite_path)
+    # Registrar o funcionário no dicionário
+    funcionarios[cpf] = {'nome': nome, 'arquivo': filepath}
 
-            # Associar o holerite ao funcionário baseado no CPF
-            cpf = holerite.filename.split('.')[0]
-            if cpf in funcionarios:
-                funcionarios[cpf]['arquivo'] = holerite_path
+    # Renderizar uma mensagem de sucesso
+    return render_template('index.html', mensagem='Funcionário cadastrado com sucesso!')
 
-        return jsonify({'success': 'Funcionários e holerites cadastrados com sucesso!'}), 200
-
-    return render_template('upload_dados.html')
-
-# Rota para consultar holerite
+# Rota para consulta de holerite
 @app.route('/consultar', methods=['GET', 'POST'])
 def consultar_holerite():
     if request.method == 'POST':
@@ -69,6 +52,7 @@ def consultar_holerite():
         else:
             return render_template('consultar.html', error='Funcionário não encontrado.')
 
+    # Página inicial de consulta
     return render_template('consultar.html')
 
 # Rota para download do holerite
@@ -124,6 +108,3 @@ def atualizar_funcionario(cpf):
 # Configuração para o Render
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-
-
-
