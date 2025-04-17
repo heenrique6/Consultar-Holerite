@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Holerite</title>
+</head>
+<body>
+    <h1>Consultar Holerite</h1>
+
+    <form action="/consultar" method="POST">
+        <label for="cpf">Digite seu CPF:</label>
+        <input type="text" id="cpf" name="cpf" required><br><br>
+        <button type="submit">Consultar</button>
+    </form>
+
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    {% if funcionario %}
+        <h2>Olá, {{ funcionario.nome }}!</h2>
+        <p>Seu holerite está disponível para download:</p>
+        <a href="/holerites/download/{{ cpf }}">Baixar Holerite</a>
+    {% endif %}
+</body>
+</html>
