@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Dados do Funcionário</title>
+</head>
+<body>
+    <h1>Atualizar Dados do Funcionário</h1>
+
+    <form action="/atualizar/{{ cpf }}" method="POST" enctype="multipart/form-data">
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" placeholder="Novo nome do funcionário"><br><br>
+
+        <label for="arquivo">Novo Holerite:</label>
+        <input type="file" id="arquivo" name="arquivo"><br><br>
+
+        <button type="submit">Atualizar</button>
+    </form>
+</body>
+</html>
